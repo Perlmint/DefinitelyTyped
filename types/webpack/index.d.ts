@@ -4,6 +4,7 @@
 //                 Benjamin Lim <https://github.com/bumbleblym>
 //                 Boris Cherny <https://github.com/bcherny>
 //                 Tommy Troy Lin <https://github.com/tommytroylin>
+//                 Gyusun Yeom <https://github.com/Perlmint>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
 /// <reference types="node" />
@@ -168,6 +169,7 @@ declare namespace webpack {
         wrappedContextRegExp?: RegExp;
         wrappedContextRecursive?: boolean;
         wrappedContextCritical?: boolean;
+        userRequest?: string;
     }
     interface OldModule extends BaseModule {
         /** An array of automatically applied loaders. */
@@ -558,6 +560,7 @@ declare namespace webpack {
         name: string;
         options: Configuration;
         outputFileSystem: any;
+        context: string;
         run(handler: Compiler.Handler): void;
         watch(watchOptions: Compiler.WatchOptions, handler: Compiler.Handler): Compiler.Watching;
     }
@@ -592,6 +595,28 @@ declare namespace webpack {
     abstract class MultiWatching implements Watching {
         close(callback: () => void): void;
         invalidate(): void;
+    }
+
+    class Compilation extends Tapable {
+        compiler: Compiler;
+        chunks: Chunk[];
+        modules: Module[];
+        assets: {[key: string]: Compilation.Asset};
+        fileDependencies: string[];
+        contextDependencies: string[];
+        fileTimestamps: {[key: string]: number};
+    }
+
+    namespace Compilation {
+        interface Asset {
+            size(): number;
+            source(): Buffer | string;
+        }
+    }
+
+    class Chunk {
+        name: string;
+        modules: Module[];
     }
 
     abstract class Plugin implements Tapable.Plugin {
